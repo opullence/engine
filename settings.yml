@@ -1,0 +1,22 @@
+log:
+  file: opulence-engine.log
+  debug: True
+
+engine:
+  celery_request_timeout: 2
+
+  databases:
+    queue_database:
+      broker_url: redis://localhost/1
+      result_backend: redis://localhost/1
+
+    mongoDB:
+        database: opulence
+        url: mongodb://localhost:27017/
+        connect_timeout: 3
+
+
+remote_collectors:
+  queue_database:
+    broker_url: redis://localhost/0
+    result_backend: redis://localhost/0

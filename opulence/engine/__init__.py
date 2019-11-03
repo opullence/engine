@@ -1,3 +1,3 @@
-from . import feature
+from .app import app
 
-__all__ = [feature]
+__all__ = [app]
