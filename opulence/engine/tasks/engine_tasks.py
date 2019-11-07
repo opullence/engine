@@ -1,12 +1,12 @@
 from opulence.common.celery.utils import sync_call
-from opulence.common.configuration import config
+from opulence.common.configuration import get_conf
 
 from ..factory import factory
 from ..models.collector import Collector
 
 app = factory.engine_app
 collectors_app = factory.remote_collectors
-timeout = config["engine"]["celery_request_timeout"]
+timeout = get_conf()["engine"]["celery_request_timeout"]
 
 
 @app.task(name="engine:load_collectors")
@@ -22,3 +22,8 @@ def load_collectors(flush=False):
             collectors_app, "collectors:collector_info", timeout, args=[collector_name]
         )
         Collector(**collector_data).save()
+
+
+@app.task(name="engine:get_collectors")
+def get_collectors():
+    return Collector.objects().to_json()  # do this in the serializer instead

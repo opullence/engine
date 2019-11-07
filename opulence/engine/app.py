@@ -5,7 +5,6 @@ from .factory import factory
 
 app = factory.engine_app
 
-
 # Run some tasks on startup
 @celeryd_init.connect
 def configure_workers(sender=None, conf=None, **kwargs):

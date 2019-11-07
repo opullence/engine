@@ -1,6 +1,6 @@
 from mongoengine import connect
 
-from opulence.common.configuration import config, configure_celery
+from opulence.common.configuration import configure_celery, get_conf
 from opulence.common.patterns import Singleton
 
 
@@ -9,19 +9,20 @@ class Factory(Singleton):
         self.mongoDB = None
         self.engine_app = None
         self.remote_collectors = None
+        self.config = get_conf()
 
     def setup(self, **kwargs):
         self.engine_app = configure_celery(
-            config["engine"]["databases"]["queue_database"], **kwargs
+            self.config["engine"]["databases"]["queue_database"], **kwargs
         )
 
         self.remote_collectors = configure_celery(
-            config["remote_collectors"]["queue_database"], **kwargs
+            self.config["remote_collectors"]["queue_database"], **kwargs
         )
         self.setup_mongodb()
 
     def setup_mongodb(self):
-        mongodb_config = config["engine"]["databases"]["mongoDB"]
+        mongodb_config = self.config["engine"]["databases"]["mongoDB"]
         # try:
         self.mongoDB = connect(
             mongodb_config["database"],

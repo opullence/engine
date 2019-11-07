@@ -3,11 +3,13 @@ import mongoengine
 from .plugin import Plugin
 
 
-class Collector(mongoengine.Document):
+class Collector(mongoengine.DynamicDocument):
+    meta = {"strict": False}
+
     active_scanning = mongoengine.BooleanField()
 
-    allowed_input = mongoengine.ListField(
-        mongoengine.ListField(mongoengine.StringField())
-    )
+    # allowed_input = mongoengine.ListField(
+    #     mongoengine.StringField()
+    # )
 
-    plugin_data = mongoengine.EmbeddedDocumentField(Plugin)
+    # plugin_data = mongoengine.EmbeddedDocumentField(Plugin)
