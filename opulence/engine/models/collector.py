@@ -1,7 +1,5 @@
 import mongoengine
 
-from .plugin import Plugin
-
 
 class Collector(mongoengine.DynamicDocument):
     meta = {"strict": False}
