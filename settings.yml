@@ -7,16 +7,16 @@ engine:
 
   databases:
     queue_database:
-      broker_url: redis://localhost/1
-      result_backend: redis://localhost/1
+      broker_url: redis://redis/1
+      result_backend: redis://redis/1
 
     mongoDB:
         database: opulence
-        url: mongodb://localhost:27017/
+        url: mongodb://mongo:27017/
         connect_timeout: 3
 
 
 remote_collectors:
   queue_database:
-    broker_url: redis://localhost/0
-    result_backend: redis://localhost/0
+    broker_url: redis://redis/0
+    result_backend: redis://redis/0
