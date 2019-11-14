@@ -2,4 +2,4 @@ gevent
 redis==3.3.11
 mongoengine==0.18.2
 opulence.common @ git+https://gitlab.com/opulence/common.git@master
-opulence.facts @ git+https://gitlab.com/opulence/facts.git@v0.0.3
+opulence.facts @ git+https://gitlab.com/opulence/facts.git@v0.0.5
