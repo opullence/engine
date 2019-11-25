@@ -9,3 +9,4 @@ app = factory.engine_app
 @celeryd_init.connect
 def configure_workers(sender=None, conf=None, **kwargs):
     tasks.engine_tasks.load_collectors(flush=True)
+    tasks.engine_tasks.load_facts(flush=True)

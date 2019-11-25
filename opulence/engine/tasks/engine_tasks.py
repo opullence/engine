@@ -7,6 +7,8 @@ from opulence.common.celery.utils import sync_call
 from ..factory import factory
 from ..models.collector import Collector
 from ..models.fact import Fact
+from ..models.result import Result
+
 
 app = factory.engine_app
 collectors_app = factory.remote_collectors
@@ -30,7 +32,7 @@ def load_collectors(flush=False):
 
 @app.task(name="engine:get_collectors")
 def get_collectors():
-    return Collector.objects().to_json()  # TODO: do this in the serializer instead
+    return Collector.objects().to_json()
 
 
 @app.task(name="engine:load_facts")
@@ -43,16 +45,36 @@ def load_facts(flush=False):
 
 @app.task(name="engine:get_facts")
 def get_facts():
-    return Fact.objects().to_json()  # TODO: do this in the serializer instead
+    return Fact.objects().to_json()
+
 
 @app.task(name="engine:execute_collector")
 def execute_collector(collector_name, fact):
-
-    for m in inspect.getmembers(all_facts, inspect.isclass):
-        fact_name = m[1]().get_info()["plugin_data"]["name"]
-        if fact_name == fact["input_type"]:
-            f = m[1](**fact["fields"])
-            return sync_call(
-                collectors_app, "collectors:execute_collector_by_name", 1000, args=[collector_name, f]
+    print("===================")
+    for f in Fact.objects():
+        if f.plugin_data["name"] == fact["input_type"]:
+            fact_cls = getattr(all_facts, f.plugin_data["name"])
+            fact_inst = fact_cls(**fact["fields"])
+            result = sync_call(
+                collectors_app, "collectors:execute_collector_by_name", 100, args=[collector_name, fact_inst]
             )
-    return "NOPE"
+            result_json = result.to_json()
+            print("!!!!!!!!!!!!!!!!!!")
+            print(result_json)
+            print("!!!!!!!!!!!!!")
+            print(result_json["collector_data"])
+            Result(
+                collector_data=result_json["collector_data"],
+                clock=result_json["clock"],
+                input=result_json["input"],
+                output=result_json["output"],
+                identifier=result_json["identifier"],
+                status=result_json["status"]).save()
+
+            return result_json
+    return "Nope"
+
+
+@app.task(name="engine:get_results")
+def get_results():
+    return Result.objects().to_json()
