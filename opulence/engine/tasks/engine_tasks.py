@@ -1,5 +1,6 @@
-from dynaconf import settings
 import inspect
+
+from dynaconf import settings
 
 import opulence.facts as all_facts
 from opulence.common.celery.utils import sync_call
@@ -8,7 +9,6 @@ from ..factory import factory
 from ..models.collector import Collector
 from ..models.fact import Fact
 from ..models.result import Result
-
 
 app = factory.engine_app
 collectors_app = factory.remote_collectors
@@ -38,7 +38,7 @@ def get_collectors():
 @app.task(name="engine:load_facts")
 def load_facts(flush=False):
     Fact.objects.delete()
-    
+
     for m in inspect.getmembers(all_facts, inspect.isclass):
         Fact(**m[1]().get_info()).save()
 
@@ -56,7 +56,10 @@ def execute_collector(collector_name, fact):
             fact_cls = getattr(all_facts, f.plugin_data["name"])
             fact_inst = fact_cls(**fact["fields"])
             result = sync_call(
-                collectors_app, "collectors:execute_collector_by_name", 100, args=[collector_name, fact_inst]
+                collectors_app,
+                "collectors:execute_collector_by_name",
+                100,
+                args=[collector_name, fact_inst],
             )
             result_json = result.to_json()
             print("!!!!!!!!!!!!!!!!!!")
@@ -69,7 +72,8 @@ def execute_collector(collector_name, fact):
                 input=result_json["input"],
                 output=result_json["output"],
                 identifier=result_json["identifier"],
-                status=result_json["status"]).save()
+                status=result_json["status"],
+            ).save()
 
             return result_json
     return "Nope"
