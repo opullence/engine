@@ -1,4 +1,5 @@
 import inspect
+from importlib import import_module
 
 from dynaconf import settings
 
@@ -50,10 +51,11 @@ def get_facts():
 
 @app.task(name="engine:execute_collector")
 def execute_collector(collector_name, fact):
-    print("===================")
     for f in Fact.objects():
         if f.plugin_data["name"] == fact["input_type"]:
-            fact_cls = getattr(all_facts, f.plugin_data["name"])
+            splitted_path = f.plugin_data["canonical_name"].split(".")
+            module = import_module(".".join(splitted_path[:-1]))
+            fact_cls = getattr(module, splitted_path[-1])
             fact_inst = fact_cls(**fact["fields"])
             result = sync_call(
                 collectors_app,
@@ -62,10 +64,6 @@ def execute_collector(collector_name, fact):
                 args=[collector_name, fact_inst],
             )
             result_json = result.to_json()
-            print("!!!!!!!!!!!!!!!!!!")
-            print(result_json)
-            print("!!!!!!!!!!!!!")
-            print(result_json["collector_data"])
             Result(
                 collector_data=result_json["collector_data"],
                 clock=result_json["clock"],
