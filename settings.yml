@@ -2,20 +2,17 @@
 default:
   CELERY_TIMEOUT: 2
   REDIS:
-      broker_url: redis://:thisisaverrygoodpassword@redis/1
-      result_backend: redis://:thisisaverrygoodpassword@redis/1
+      broker_url: redis://localhost/0
+      result_backend: redis://localhost/0
   MONGO:
         database: opulence
-        url: mongodb://mongo:27017/
+        url: mongodb://localhost/
         connect_timeout: 3
 
   REMOTE_COLLECTOR:
     redis:
-      broker_url: redis://:thisisaverrygoodpassword@redis/0
-      result_backend: redis://:thisisaverrygoodpassword@redis/0
+      broker_url: redis://localhost/0
+      result_backend: redis://localhost/0
 
 development:
   DEBUG: true
-
-production:
-  DEBUG: false

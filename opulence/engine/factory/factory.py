@@ -7,7 +7,6 @@ from opulence.common.patterns import Singleton
 
 class Factory(Singleton):
     def __init__(self):
-        self.mongoDB = None
         self.engine_app = None
         self.remote_collectors = None
 
@@ -17,16 +16,12 @@ class Factory(Singleton):
         self.remote_collectors = configure_celery(
             settings.REMOTE_COLLECTOR.redis, **kwargs
         )
-        self.setup_mongodb()
 
-    def setup_mongodb(self):
+    @staticmethod
+    def mongo_client():
         mongodb_config = settings.MONGO
-        # try:
-        self.mongoDB = connect(
+        return connect(
             mongodb_config["database"],
             host=mongodb_config["url"],
-            serverSelectionTimeoutMS=mongodb_config["connect_timeout"],
+            serverSelectionTimeoutMS=mongodb_config["connect_timeout"]
         )
-        self.mongoDB.server_info()
-        # except Exception as err:
-        #     print("MongoDB connect error:", err)

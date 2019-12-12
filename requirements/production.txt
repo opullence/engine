@@ -2,5 +2,5 @@ gevent
 redis==3.3.11
 dynaconf
 mongoengine==0.18.2
-opulence.common @ git+https://gitlab.com/opulence/common.git@v0.0.8
-opulence.facts @ git+https://gitlab.com/opulence/facts.git@v0.0.7
+opulence.common @ git+https://gitlab.com/opulence/common.git@jurelou/v0.0.8
+opulence.facts @ git+https://gitlab.com/opulence/facts.git@jurelou/v0.0.8

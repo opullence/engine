@@ -1,12 +1,17 @@
-from celery.signals import celeryd_init
-
-from . import tasks
+from .scans import tasks
 from .factory import factory
+from .facts import tasks as fact_tasks
+from .collectors import tasks as collectors_tasks
+
+from celery.signals import celeryd_init
 
 app = factory.engine_app
 
-# Run some tasks on startup
+#Load things on startup
 @celeryd_init.connect
-def configure_workers(sender=None, conf=None, **kwargs):
-    tasks.engine_tasks.load_collectors(flush=True)
-    tasks.engine_tasks.load_facts(flush=True)
+def startup(sender=None, conf=None, **kwargs):
+    fact_tasks.flush.delay()
+    fact_tasks.load.delay()
+
+    collectors_tasks.flush.delay()
+    collectors_tasks.load.delay()    
