@@ -1,6 +1,15 @@
+from mongoengine import connect
+from dynaconf import settings
 from celery import Task
 
-from . import factory
+
+def mongo_client():
+    mongodb_config = settings.MONGO
+    return connect(
+        mongodb_config["database"],
+        host=mongodb_config["url"],
+        serverSelectionTimeoutMS=mongodb_config["connect_timeout"]
+    )
 
 
 class CacheMongoClient(Task):
@@ -9,5 +18,5 @@ class CacheMongoClient(Task):
     @property
     def db(self):
         if self._db is None:
-            self._db = factory.mongo_client()
+            self._db = mongo_client()
         return self._db
