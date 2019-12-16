@@ -2,6 +2,7 @@ import inspect
 from importlib import import_module
 
 from opulence.engine.factory import mongoClient
+
 from .models import Fact
 
 

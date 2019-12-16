@@ -1,7 +1,7 @@
-from ..factory import factory, mongoClient
-
-from opulence.engine.collectors.models import Collector
 import opulence.engine.collectors.signatures as collectors_s
+from opulence.engine.collectors.models import Collector
+
+from ..factory import factory, mongoClient
 
 app = factory.engine_app
 
@@ -14,9 +14,9 @@ def get():
 
 @app.task(name="engine:collectors.load")
 def load():
-    store_result =  app.signature("engine:__store_collectors")
+    store_result = app.signature("engine:__store_collectors")
 
-    chain = collectors_s.load() | collectors_s.list()  | store_result
+    chain = collectors_s.load() | collectors_s.list() | store_result
     chain.apply_async()
 
 
@@ -29,7 +29,9 @@ def flush():
 @app.task(base=mongoClient.CacheMongoClient, name="engine:collectors.info")
 def info(external_identifier):
     with info.db as connection:
-        return Collector.objects(external_identifier=external_identifier).first().to_json()
+        return (
+            Collector.objects(external_identifier=external_identifier).first().to_json()
+        )
 
 
 @app.task(name="engine:collectors.launch")
@@ -41,10 +43,14 @@ def launch(collector_name, fact):
 def __store_collectors(collectors):
     with __store_collectors.db as connection:
         for collector_data in collectors:
-            if not Collector.objects(external_identifier=collector_data["plugin_data"]["name"]): # TODO: upsert
-                Collector(external_identifier=collector_data["plugin_data"]["name"], **collector_data).save()
+            if not Collector.objects(
+                external_identifier=collector_data["plugin_data"]["name"]
+            ):  # TODO: upsert
+                Collector(
+                    external_identifier=collector_data["plugin_data"]["name"],
+                    **collector_data
+                ).save()
 
 
-
-#https://docs.celeryproject.org/en/latest/userguide/canvas.html
-#http://docs.celeryproject.org/en/latest/userguide/tasks.html?highlight=state#states
+# https://docs.celeryproject.org/en/latest/userguide/canvas.html
+# http://docs.celeryproject.org/en/latest/userguide/tasks.html?highlight=state#states

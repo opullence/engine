@@ -1,6 +1,6 @@
-from mongoengine import connect
-from dynaconf import settings
 from celery import Task
+from dynaconf import settings
+from mongoengine import connect
 
 
 def mongo_client():
@@ -8,7 +8,7 @@ def mongo_client():
     return connect(
         mongodb_config["database"],
         host=mongodb_config["url"],
-        serverSelectionTimeoutMS=mongodb_config["connect_timeout"]
+        serverSelectionTimeoutMS=mongodb_config["connect_timeout"],
     )
 
 
