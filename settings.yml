@@ -11,8 +11,23 @@ default:
 
   REMOTE_COLLECTOR:
     redis:
-      broker_url: redis://localhost/0
-      result_backend: redis://localhost/0
+      broker_url: redis://localhost/12
+      result_backend: redis://localhost/12
 
 development:
   DEBUG: true
+
+production:
+  DEBUG: false
+  CELERY_TIMEOUT: 5
+  MONGO:
+    database: opulence
+    url: mongodb://mongo
+    connect_timeout: 5
+  REDIS:
+      broker_url: redis://:thisisaverrygoodpassword@redis/0
+      result_backend: redis://:thisisaverrygoodpassword@redis/0
+  REMOTE_COLLECTOR:
+    redis:
+      broker_url: redis://:thisisaverrygoodpassword@redis/0
+      result_backend: redis://:thisisaverrygoodpassword@redis/0
