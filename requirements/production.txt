@@ -1,5 +1,5 @@
 gevent
-redis==3.3.11
+redis==4.5.3
 dynaconf
 mongoengine==0.18.2
 opulence.common @ git+https://gitlab.com/opulence/common.git@v1.0.0
